@@ -74,6 +74,9 @@ public class PollyDemoController : ControllerBase
     /// После нескольких ошибок цепь размыкается и запросы сразу отклоняются
     /// GET api/pollydemo/circuit-breaker
     /// </summary>
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    [ProducesResponseType(StatusCodes.Status503ServiceUnavailable)]
     [HttpGet("circuit-breaker")]
     public async Task<IActionResult> DemoCircuitBreaker([FromQuery] bool simulateFailure = false)
     {

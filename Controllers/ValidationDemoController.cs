@@ -1,3 +1,4 @@
+using FluentValidation;
 using Microsoft.AspNetCore.Mvc;
 using ResilienceDemo.Api.Models;
 
@@ -12,10 +13,12 @@ namespace ResilienceDemo.Api.Controllers;
 public class ValidationDemoController : ControllerBase
 {
     private readonly ILogger<ValidationDemoController> _logger;
+    private readonly IValidator<CreateOrderRequest> _validator;
 
-    public ValidationDemoController(ILogger<ValidationDemoController> logger)
+    public ValidationDemoController(ILogger<ValidationDemoController> logger, IValidator<CreateOrderRequest> validator)
     {
         _logger = logger;
+        _validator = validator;
     }
 
     /// <summary>
@@ -52,6 +55,9 @@ public class ValidationDemoController : ControllerBase
     {
         // Если мы дошли сюда - валидация прошла успешно
         // FluentValidation автоматически возвращает 400 при ошибках
+
+        // Если бы мы хотели вручную вызвать валидацию, то это выглядело бы так:
+        //_validator.ValidateAndThrow(request);
 
         _logger.LogInformation(
             "Заказ создан для клиента {CustomerName}, сумма: {Amount}",
