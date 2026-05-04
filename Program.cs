@@ -4,6 +4,7 @@ using Microsoft.Extensions.Http.Resilience;
 using Polly;
 using Refit;
 using ResilienceDemo.Api.Clients;
+using ResilienceDemo.Api.DelegateHandlersExample;
 using ResilienceDemo.Api.Services;
 using ResilienceDemo.Api.Validators;
 
@@ -73,6 +74,10 @@ builder.Services.AddHttpClient("CustomResilience", client =>
 {
     client.BaseAddress = new Uri("https://api.example.com");
 })
+// Добавляем кастомный делегат для логирования запросов и ответов
+.AddHttpMessageHandler<LoggingHandler>()
+// Добавляем кастомный делегат для валидации DTO после получения ответа
+//.AddHttpMessageHandler<ValidationHandler<UserDto>>();
 .AddResilienceHandler("custom-pipeline", builder =>
 {
     // Полностью кастомный pipeline

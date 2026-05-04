@@ -1,4 +1,6 @@
+using FluentValidation;
 using ResilienceDemo.Api.Models;
+using ResilienceDemo.Api.Validators;
 
 namespace ResilienceDemo.Api.Services;
 
@@ -18,14 +20,17 @@ public class ResilientHttpService : IResilientHttpService
     // Именованный HttpClient с настроенными политиками устойчивости
     private readonly HttpClient _httpClient;
     private readonly ILogger<ResilientHttpService> _logger;
+    private readonly UserDtoValidator _userDtoValidator;
 
     public ResilientHttpService(
         IHttpClientFactory httpClientFactory,
-        ILogger<ResilientHttpService> logger)
+        ILogger<ResilientHttpService> logger,
+        UserDtoValidator userDtoValidator)
     {
         // Получаем клиент с предварительно настроенными политиками
         _httpClient = httpClientFactory.CreateClient("JsonPlaceholder");
         _logger = logger;
+        _userDtoValidator = userDtoValidator;
     }
 
     public async Task<ExternalApiResponse<List<UserDto>>> GetUsersFromExternalApiAsync(
@@ -89,6 +94,8 @@ public class ResilientHttpService : IResilientHttpService
             }
 
             var user = await response.Content.ReadFromJsonAsync<UserDto>(ct);
+
+            await _userDtoValidator.ValidateAndThrowAsync(user, ct);
 
             return new ExternalApiResponse<UserDto>
             {
